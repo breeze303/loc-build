@@ -58,7 +58,7 @@ UPDATE_PACKAGE "passwall" "Openwrt-Passwall/openwrt-passwall" "main" "pkg"
 UPDATE_PACKAGE "passwall2" "Openwrt-Passwall/openwrt-passwall2" "main" "pkg"
 
 UPDATE_PACKAGE "luci-app-smartdns" "pymumu/luci-app-smartdns" "master"
-UPDATE_PACKAGE "smartdns" "pymumu/openwrt-smartdns" "master" "smartdns"
+UPDATE_PACKAGE "smartdns" "pymumu/openwrt-smartdns" "master"
 
 UPDATE_PACKAGE "lucky" "sirpdboy/luci-app-lucky" "main"
 
