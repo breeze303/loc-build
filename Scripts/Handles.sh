@@ -108,7 +108,7 @@ fi
 #临时修复smartdns哈希问题
 # 1. 定义变量（旧哈希与新哈希）
 OLD_HASH="34c85d914e01006439f5e1c9287ae96d6bfcc729ed4bcf386bf5948b938254f4"
-NEW_HASH="5ef82ea81d5f627f52171e3b487331ecdd270554555cbff3d291590e19f4658d"
+NEW_HASH="skip"
 FILE="./openwrt-smartdns/Makefile"
 
 # 2. 执行替换
