@@ -106,12 +106,22 @@ if [ -n "$DAED_MAKEFILE" ]; then
 fi
 
 #临时修复smartdns哈希问题
+# 1. 定义变量（旧哈希与新哈希）
+OLD_HASH="34c85d914e01006439f5e1c9287ae96d6bfcc729ed4bcf386bf5948b938254f4"
+NEW_HASH="5ef82ea81d5f627f52171e3b487331ecdd270554555cbff3d291590e19f4658d"
 FILE="./openwrt-smartdns/Makefile"
 
-if [ -f "$FILE" ]; then
-    sed -i 's/609fec024396a3a26278ef9fe7bd49aeca478e3163fc53c699a5f402fa0320f0/f8bfb91ae0992dd62392ebb2b7d968d514f7cbc3cc6a5d975dafdd6b27bf0a0c/g' "$FILE"
-	sed -i 's|\.\./\.\./lang/rust/rust-package\.mk|$(TOPDIR)/feeds/packages/lang/rust/rust-package.mk|g' "$FILE"
-    echo "SmartDNS Makefile 已更新。"
+# 2. 执行替换
+sed -i "s/$OLD_HASH/$NEW_HASH/g" "$FILE"
+
+# 3. 验证结果
+if grep -q "$NEW_HASH" "$FILE"; then
+    echo -e "\033[32m✅ 修改成功！\033[0m"
+    echo "当前文件中的哈希值配置如下："
+    grep -i "HASH" "$FILE" --color=always
 else
-    echo "跳过：未找到 SmartDNS Makefile。"
+    echo -e "\033[31m❌ 修改失败！\033[0m"
+    echo "未在文件中找到新哈希值，请检查文件路径或旧哈希值是否正确。"
+    echo "当前文件内容："
+    grep -i "HASH" "$FILE"
 fi
