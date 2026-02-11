@@ -31,7 +31,7 @@ on:
           - immortalwrt/immortalwrt
           - LiBwrt/openwrt-6.x
           - qosmio/openwrt-ipq
-          - ZqinKing/wrt_release
+          - ZqinKing/immortalwrt
       BRANCH:
         default: 'master'
         required: true
