@@ -1,24 +1,28 @@
 #!/bin/bash
 
+# =========================================================
+# WRT-CI 插件下载管理脚本
+# =========================================================
+
+SCRIPTS_DIR=$(cd $(dirname $0) && pwd)
+[ -f "${SCRIPTS_DIR}/ui.sh" ] && source "${SCRIPTS_DIR}/ui.sh"
+
 #安装和更新软件包
 UPDATE_PACKAGE() {
 	local PKG_NAME=$1
 	local PKG_REPO=$2
 	local PKG_BRANCH=$3
 	local PKG_SPECIAL=$4
-	local PKG_LIST=("$PKG_NAME" $5)  # 第5个参数为自定义名称列表
+	local PKG_LIST=("$PKG_NAME" $5)
 	local REPO_NAME=${PKG_REPO#*/}
 
-	echo " "
+	msg_info "处理插件: ${PKG_NAME}"
 
-	# 删除本地可能存在的不同名称的软件包 (防止冲突)
+	# 清理冲突
 	for NAME in "${PKG_LIST[@]}"; do
 		local FOUND_DIRS=$(find ../feeds/luci/ ../feeds/packages/ -maxdepth 3 -type d -iname "*$NAME*" 2>/dev/null)
 		if [ -n "$FOUND_DIRS" ]; then
-			while read -r DIR; do
-				rm -rf "$DIR"
-				echo "Delete conflict directory: $DIR"
-			done <<< "$FOUND_DIRS"
+			while read -r DIR; do rm -rf "$DIR"; done <<< "$FOUND_DIRS"
 		fi
 	done
 
@@ -27,27 +31,31 @@ UPDATE_PACKAGE() {
 	if [[ "$PKG_SPECIAL" == "name" ]]; then
 		TARGET_DIR="$PKG_NAME"
 	else
-		TARGET_DIR="$REPO_NAME"
+		TARGET_DIR="${REPO_NAME%.git}"
 	fi
 
-	# 始终删除并重新克隆，以应对 Handles.sh 可能带来的本地修改
-	echo "Re-cloning package: $PKG_NAME"
+	# 确定克隆地址 (支持完整 URL 或 GitHub 简写)
+	local CLONE_URL="$PKG_REPO"
+	if [[ ! "$CLONE_URL" == "http"* ]]; then
+		CLONE_URL="https://github.com/$PKG_REPO.git"
+	fi
+
+	# 始终删除并重新克隆
+	echo "正在拉取: $CLONE_URL [$PKG_BRANCH]"
 	rm -rf "$TARGET_DIR"
-	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git" $TARGET_DIR
+	git clone --depth=1 --single-branch --branch $PKG_BRANCH "$CLONE_URL" $TARGET_DIR
 
 	# 处理克隆后的特殊逻辑
 	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
-		echo "Extracting packages from $REPO_NAME..."
-		find ./$REPO_NAME/*/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune -exec cp -rf {} ./ \;
-		rm -rf ./$REPO_NAME/
+		echo "正在从大杂烩仓库中提取包: $PKG_NAME"
+		find ./$TARGET_DIR/*/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune -exec cp -rf {} ./ \;
+		rm -rf ./$TARGET_DIR/
 	fi
 }
 
-# 调用示例
-# UPDATE_PACKAGE "OpenAppFilter" "destan19/OpenAppFilter" "master" "" "custom_name1 custom_name2"
-# UPDATE_PACKAGE "open-app-filter" "destan19/OpenAppFilter" "master" "" "luci-app-appfilter oaf" 这样会把原有的open-app-filter，luci-app-appfilter，oaf相关组件删除，不会出现coremark错误。
-
-# UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
+# =========================================================
+# 默认核心插件 (框架内置)
+# =========================================================
 UPDATE_PACKAGE "argon" "sbwml/luci-theme-argon" "openwrt-25.12"
 UPDATE_PACKAGE "aurora" "eamonxg/luci-theme-aurora" "master"
 UPDATE_PACKAGE "aurora-config" "eamonxg/luci-app-aurora-config" "master"
@@ -64,7 +72,6 @@ UPDATE_PACKAGE "luci-app-smartdns" "pymumu/luci-app-smartdns" "master"
 UPDATE_PACKAGE "smartdns" "pymumu/openwrt-smartdns" "master"
 
 UPDATE_PACKAGE "lucky" "sirpdboy/luci-app-lucky" "main"
-
 UPDATE_PACKAGE "ddns-go" "sirpdboy/luci-app-ddns-go" "main"
 UPDATE_PACKAGE "diskman" "lisaac/luci-app-diskman" "master"
 UPDATE_PACKAGE "easytier" "EasyTier/luci-app-easytier" "main"
@@ -81,18 +88,35 @@ UPDATE_PACKAGE "viking" "VIKINGYFY/packages" "main" "" "luci-app-timewol luci-ap
 UPDATE_PACKAGE "vnt" "lmq8267/luci-app-vnt" "main"
 UPDATE_PACKAGE "daed" "QiuSimons/luci-app-daed" "master"
 
-#更新软件包版本
+# =========================================================
+# 用户自定义插件逻辑
+# =========================================================
+
+# 1. 尝试从外部文件读取 (Config/CUSTOM_PACKAGES.txt)
+# 格式: 包名 仓库 选项(pkg/name) 冲突包
+CUSTOM_FILE="../../Config/CUSTOM_PACKAGES.txt"
+if [ -f "$CUSTOM_FILE" ]; then
+    echo -e "\n加载自定义插件列表 ($CUSTOM_FILE)..."
+    while read -r line; do
+        [[ "$line" =~ ^#.*$ || -z "$line" ]] && continue
+        UPDATE_PACKAGE $line
+    done < "$CUSTOM_FILE"
+fi
+
+# 2. 直接在此下方添加手动调用 (方便快速调试)
+# UPDATE_PACKAGE "Hello" "world/hello" "master"
+
+# =========================================================
+# 版本更新逻辑
+# =========================================================
 UPDATE_VERSION() {
 	local PKG_NAME=$1
 	local PKG_MARK=${2:-false}
 	local PKG_FILES=$(find ./ ../feeds/packages/ -maxdepth 3 -type f -wholename "*/$PKG_NAME/Makefile")
 
 	if [ -z "$PKG_FILES" ]; then
-		echo "$PKG_NAME not found!"
 		return
 	fi
-
-	echo -e "\n$PKG_NAME version update has started!"
 
 	for PKG_FILE in $PKG_FILES; do
 		local PKG_REPO=$(grep -Po "PKG_SOURCE_URL:=https://.*github.com/\K[^/]+/[^/]+(?=.*)" $PKG_FILE)
@@ -104,24 +128,16 @@ UPDATE_VERSION() {
 		local OLD_HASH=$(grep -Po "PKG_HASH:=\K.*" "$PKG_FILE")
 
 		local PKG_URL=$([[ "$OLD_URL" == *"releases"* ]] && echo "${OLD_URL%/}/$OLD_FILE" || echo "${OLD_URL%/}")
-
 		local NEW_VER=$(echo $PKG_TAG | sed -E 's/[^0-9]+/\./g; s/^\.|\.$//g')
 		local NEW_URL=$(echo $PKG_URL | sed "s/\$(PKG_VERSION)/$NEW_VER/g; s/\$(PKG_NAME)/$PKG_NAME/g")
 		local NEW_HASH=$(curl -sL "$NEW_URL" | sha256sum | cut -d ' ' -f 1)
 
-		echo "old version: $OLD_VER $OLD_HASH"
-		echo "new version: $NEW_VER $NEW_HASH"
-
 		if [[ "$NEW_VER" =~ ^[0-9].* ]] && dpkg --compare-versions "$OLD_VER" lt "$NEW_VER"; then
 			sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$NEW_VER/g" "$PKG_FILE"
 			sed -i "s/PKG_HASH:=.*/PKG_HASH:=$NEW_HASH/g" "$PKG_FILE"
-			echo "$PKG_FILE version has been updated!"
-		else
-			echo "$PKG_FILE version is already the latest!"
+			echo "$PKG_NAME 已升级至 $NEW_VER"
 		fi
 	done
 }
 
-#UPDATE_VERSION "软件包名" "测试版，true，可选，默认为否"
 UPDATE_VERSION "sing-box"
-#UPDATE_VERSION "tailscale"

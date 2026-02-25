@@ -12,7 +12,7 @@
 在任何 Ubuntu/Debian 环境下，只需一行命令，即可全自动拉取项目并开启仪表盘：
 
 ```bash
-bash <(curl -sL https://raw.githubusercontent.com/breeze303/loc-build/main/b.sh)
+bash <(curl -sL https://raw.githubusercontent.com/breeze303/loc-build/main/install.sh)
 ```
 
 ---
