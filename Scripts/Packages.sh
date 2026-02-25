@@ -11,32 +11,35 @@ UPDATE_PACKAGE() {
 
 	echo " "
 
-	# 删除本地可能存在的不同名称的软件包
+	# 删除本地可能存在的不同名称的软件包 (防止冲突)
 	for NAME in "${PKG_LIST[@]}"; do
-		# 查找匹配的目录
-		echo "Search directory: $NAME"
 		local FOUND_DIRS=$(find ../feeds/luci/ ../feeds/packages/ -maxdepth 3 -type d -iname "*$NAME*" 2>/dev/null)
-
-		# 删除找到的目录
 		if [ -n "$FOUND_DIRS" ]; then
 			while read -r DIR; do
 				rm -rf "$DIR"
-				echo "Delete directory: $DIR"
+				echo "Delete conflict directory: $DIR"
 			done <<< "$FOUND_DIRS"
-		else
-			echo "Not fonud directory: $NAME"
 		fi
 	done
 
-	# 克隆 GitHub 仓库
-	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git"
+	# 确定目标目录
+	local TARGET_DIR=""
+	if [[ "$PKG_SPECIAL" == "name" ]]; then
+		TARGET_DIR="$PKG_NAME"
+	else
+		TARGET_DIR="$REPO_NAME"
+	fi
 
-	# 处理克隆的仓库
+	# 始终删除并重新克隆，以应对 Handles.sh 可能带来的本地修改
+	echo "Re-cloning package: $PKG_NAME"
+	rm -rf "$TARGET_DIR"
+	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git" $TARGET_DIR
+
+	# 处理克隆后的特殊逻辑
 	if [[ "$PKG_SPECIAL" == "pkg" ]]; then
+		echo "Extracting packages from $REPO_NAME..."
 		find ./$REPO_NAME/*/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune -exec cp -rf {} ./ \;
 		rm -rf ./$REPO_NAME/
-	elif [[ "$PKG_SPECIAL" == "name" ]]; then
-		mv -f $REPO_NAME $PKG_NAME
 	fi
 }
 

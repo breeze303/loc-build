@@ -1,0 +1,18 @@
+# OpenWRT 编译环境忽略文件
+wrt/
+bin/
+Logs/
+Firmware/
+dl/
+.ccache/
+
+# 配置文件忽略
+Config/auto.conf
+.auto_config
+
+# 临时文件
+*.log
+*.tmp
+*.swp
+.DS_Store
+GEMINI.md

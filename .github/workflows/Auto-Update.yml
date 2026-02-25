@@ -1,0 +1,47 @@
+name: Auto-Update
+
+on:
+  schedule:
+    - cron: '0 20 * * *' # 每天凌晨 4:00 (北京时间) 运行
+  workflow_dispatch: # 支持手动触发
+
+env:
+  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Projects
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
+      - name: Initialization Environment
+        run: |
+          sudo apt update
+          sudo apt install -y jq curl
+
+      - name: Run Update Version
+        run: |
+          # 模拟建立 wrt 目录结构以供脚本搜索
+          mkdir -p wrt/package
+          cd wrt/package
+          
+          # 运行软件包更新脚本
+          export GITHUB_WORKSPACE=$GITHUB_WORKSPACE
+          bash $GITHUB_WORKSPACE/Scripts/Packages.sh
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 检查是否有文件变动
+          if [ -n "$(git status --porcelain)" ]; then
+            git add .
+            git commit -m "Auto Update: synchronized packages and versions at $(date +'%Y-%m-%d %H:%M:%S')"
+            git push
+          else
+            echo "No changes detected."
+          fi
