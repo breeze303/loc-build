@@ -103,14 +103,21 @@ compile_workflow() {
     make download -j$(nproc) 2>&1 | tee -a "$LOG_FILE"
     
     msg_info "$(T build_msg)"
-    # [核心] 使用 tee 记录最终编译过程
+    # 执行最终编译
     if (make -j$(nproc) || make -j1 V=s) 2>&1 | tee -a "$LOG_FILE"; then
         msg_ok "$(T done)"
         archive_firmware
+        echo -e "\n  ${BG}[SUCCESS]${NC} 编译圆满完成！固件已就绪。"
+        read -p "  按回车键返回主菜单..."
     else
+        echo -e "\n  ${BR}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${NC}"
+        echo -e "  ${BR}[ ERROR ] 编译流程在 Step 5 发生致命错误！${NC}"
+        echo -e "  ${BR}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!${NC}"
         msg_err "$(T fail)"
-        msg_info "错误日志已保存至: ${BOLD}$LOG_FILE${NC}"
-        read -p " Enter to return dashboard..."
+        msg_info "报错日志路径: ${BOLD}$LOG_FILE${NC}"
+        echo -e "  ${BY}提示: 请检查日志末尾的 Error 关键字定位问题。${NC}"
+        draw_line
+        read -p "  请阅读上方报错信息，按回车键返回主菜单..."
     fi
 }
 
