@@ -153,7 +153,16 @@ while true; do
            msg_info "Timer Mode..."; sleep 1 ;;
         4) # manage_packages 逻辑
            msg_info "Package Mode..."; sleep 1 ;;
-        5) msg_info "Checking update..."; git pull && (msg_ok "OK"; exit 0) || msg_err "FAIL"; sleep 1 ;;
+        5) msg_info "正在检查系统脚本更新..."
+           if git pull | grep -q "Already up to date."; then
+               msg_ok "系统已是最新版本。"
+               sleep 1
+           else
+               msg_ok "系统更新成功！正在自动重启脚本..."
+               sleep 1
+               # 核心：使用 exec 替换当前进程以重启脚本
+               exec "$0" "$@"
+           fi ;;
         6) sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'; read -p " Enter..." ;;
         7) [ "$CURRENT_LANG" == "zh" ] && echo "en" > "$LANG_CONF" || echo "zh" > "$LANG_CONF"; source "${SCRIPTS_DIR}/Ui.sh" ;;
         8|255) exit 0 ;;
