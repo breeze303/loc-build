@@ -56,15 +56,21 @@ save_last_build() {
 }
 
 archive_firmware() {
-    msg_step "6"; local date=$(date +"%y.%m.%d")
-    local target_dir=$(find "$BUILD_DIR/bin/targets/" -type d -mindepth 2 -maxdepth 2 | head -n 1)
+    msg_step "6"
+    # 修复 find 顺序: 先指定深度，再指定类型
+    local target_dir=$(find "$BUILD_DIR/bin/targets/" -mindepth 2 -maxdepth 2 -type d | head -n 1)
+    
     if [ -n "$target_dir" ]; then
         mkdir -p "$FIRMWARE_DIR"
-        find "$target_dir" -type f \( -name "*.img.gz" -o -name "*.bin" -o -name "*.tar.gz" \) | while read -r file; do
-            local ext="${file##*.}"
-            cp "$file" "$FIRMWARE_DIR/WRT-${WRT_CONFIG:-OpenWrt}-${date}.${ext}"
+        msg_info "正在将固件移动至归档目录..."
+        # 查找所有镜像文件并直接移动，保留原名
+        find "$target_dir" -type f \( -name "*.img.gz" -o -name "*.bin" -o -name "*.tar.gz" -o -name "*.itb" \) | while read -r file; do
+            mv -f "$file" "$FIRMWARE_DIR/"
+            echo -e "  ${BG}[MOVE]${NC} $(basename "$file")"
         done
-        msg_ok "固件已提取至: $FIRMWARE_DIR"
+        msg_ok "归档完成: $FIRMWARE_DIR"
+    else
+        msg_err "未找到生成的固件目录。"
     fi
 }
 
