@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # =========================================================
-# WRT-CI 统一视觉引擎 (Ui.sh) - V10.0 Final i18n
+# WRT-CI 统一视觉引擎 (Ui.sh) - V11.5 Patch
 # =========================================================
 
 # --- 色彩定义 ---
@@ -27,24 +27,25 @@ T() {
             case "$key" in
                 "main_menu") echo "Main Dashboard Console :" ;;
                 "build") echo "Launch Interactive Build" ;;
-                "rebuild") echo "Rebuild Last Model Session" ;;
+                "rebuild") echo "Rebuild Last Session" ;;
                 "sync") echo "Sync Assets & Feeds" ;;
                 "timer") echo "Automation & Scheduler" ;;
-                "pkg") echo "Package Manager Center" ;;
+                "pkg") echo "Package Management" ;;
                 "self") echo "Update Framework Scripts" ;;
-                "env") echo "Init Build Environment" ;;
+                "env") echo "Initialize Build Env" ;;
                 "lang") echo "Language (中文)" ;;
-                "exit") echo "Exit and Close Dashboard" ;;
-                "source") echo "Source Repository" ;;
-                "branch") echo "Build Branch" ;;
-                "model") echo "Target Model" ;;
-                "strategy") echo "Build Strategy" ;;
+                "exit") echo "Exit Console" ;;
+                "config_confirm") echo "Configuration Confirmation :" ;;
+                "keep_continue") echo "Keep Defaults and Continue" ;;
+                "mod_ip") echo "Modify IP Address" ;;
+                "mod_host") echo "Modify Hostname" ;;
+                "mod_wifi") echo "Modify WiFi Settings" ;;
+                "strategy") echo "Select Compilation Strategy :" ;;
                 "fast") echo "Incremental (Fast)" ;;
                 "stable") echo "Standard (Stable)" ;;
                 "clean") echo "Full Clean (Deep)" ;;
                 "back") echo "Back" ;;
-                "cancel") echo "Cancel" ;;
-                "manual") echo "Manual Input" ;;
+                "cancel") echo "Cancel Build" ;;
                 "info") echo "INFO" ;;
                 "done") echo "DONE" ;;
                 "fail") echo "FAIL" ;;
@@ -52,38 +53,26 @@ T() {
                 "load") echo "LOAD" ;;
                 "mem") echo "MEM" ;;
                 "disk") echo "DISK" ;;
+                "press_enter") echo "Press Enter to continue..." ;;
+                "core_pkg") echo "Core Internal Packages" ;;
+                "custom_pkg") echo "User Custom Packages" ;;
+                "searching_branches") echo "Searching remote branches..." ;;
                 "step1") echo "Source Environment Sync" ;;
                 "step2") echo "Feed Plugins Update" ;;
                 "step3") echo "Custom Assets Loading" ;;
-                "step4") echo "Config Injection & Generation" ;;
-                "step5") echo "Parallel Core Building" ;;
-                "step6") echo "Firmware Smart Archiving" ;;
+                "step4") echo "Config Injection" ;;
+                "step5") echo "Core Building" ;;
+                "step6") echo "Smart Archive" ;;
                 "dl_msg") echo "Downloading dependencies..." ;;
-                "build_msg") echo "Core building in progress..." ;;
+                "build_msg") echo "Core engine is building..." ;;
                 "hour") echo "Hour (0-23)" ;;
                 "min") echo "Min (0-59)" ;;
-                "set_sched") echo "Set Periodic Schedule" ;;
-                "check_task") echo "Check Active Plans" ;;
-                "term_sched") echo "Terminate All Tasks" ;;
-                "config_pipe") echo "Config Pipeline Setup" ;;
-                "view_logs") echo "View Real-time Logs" ;;
-                "view_logs_hint") echo "Reading logs... Press Ctrl+C to return to dashboard." ;;
-                "view_list") echo "View Package List" ;;
-                "add_pkg") echo "Add Custom Package" ;;
-                "del_pkg") echo "Delete Package" ;;
-                "edit_file") echo "Manual Edit Config" ;;
-                "ver_update") echo "Update Package Versions" ;;
-                "save_exit") echo "Save and Return" ;;
-                "discard") echo "Discard Changes" ;;
-                "mod_source") echo "Modify Remote Source" ;;
-                "manage_model") echo "Manage Machine List" ;;
-                "config_cache") echo "Cache Retention Policy" ;;
                 *) echo "$key" ;;
             esac ;;
-        *) # 全量中文汉化
+        *) # 全量汉化
             case "$key" in
                 "main_menu") echo "主菜单控制台 :" ;;
-                "build") echo "启动交互编译流程" ;;
+                "build") echo "启动全流程交互编译" ;;
                 "rebuild") echo "再次编译上个机型" ;;
                 "sync") echo "仅同步代码与插件" ;;
                 "timer") echo "自动化调度管理" ;;
@@ -91,17 +80,18 @@ T() {
                 "self") echo "检查系统脚本更新" ;;
                 "env") echo "初始化编译环境" ;;
                 "lang") echo "切换显示语言 (English)" ;;
-                "exit") echo "结束并关闭当前会话" ;;
-                "source") echo "源码仓库" ;;
-                "branch") echo "目标分支" ;;
-                "model") echo "目标机型" ;;
-                "strategy") echo "选择编译策略" ;;
+                "exit") echo "结束当前会话" ;;
+                "config_confirm") echo "预设参数确认 :" ;;
+                "keep_continue") echo "保持默认并继续" ;;
+                "mod_ip") echo "修改 IP 地址" ;;
+                "mod_host") echo "修改主机名称" ;;
+                "mod_wifi") echo "修改 WiFi 设置" ;;
+                "strategy") echo "选择编译策略 :" ;;
                 "fast") echo "增量快编 (极速)" ;;
                 "stable") echo "标准更新 (稳健)" ;;
                 "clean") echo "深度清理 (彻底)" ;;
                 "back") echo "返回" ;;
-                "cancel") echo "取消并返回" ;;
-                "manual") echo "手动输入" ;;
+                "cancel") echo "取消编译" ;;
                 "info") echo "信息" ;;
                 "done") echo "完成" ;;
                 "fail") echo "失败" ;;
@@ -109,6 +99,10 @@ T() {
                 "load") echo "负载" ;;
                 "mem") echo "内存" ;;
                 "disk") echo "磁盘" ;;
+                "press_enter") echo "按回车键继续..." ;;
+                "core_pkg") echo "框架核心内置插件" ;;
+                "custom_pkg") echo "用户自定义扩展插件" ;;
+                "searching_branches") echo "正在探测远程分支..." ;;
                 "step1") echo "源码环境同步" ;;
                 "step2") echo "更新插件源 (Feeds)" ;;
                 "step3") echo "载入自定义补丁与包" ;;
@@ -119,83 +113,18 @@ T() {
                 "build_msg") echo "核心引擎正在全力运转..." ;;
                 "hour") echo "时 (0-23)" ;;
                 "min") echo "分 (0-59)" ;;
-                "set_sched") echo "设定周期执行计划" ;;
-                "check_task") echo "检查当前活跃计划" ;;
-                "term_sched") echo "终止所有计划任务" ;;
-                "config_pipe") echo "配置自动化流水线" ;;
-                "view_logs") echo "查看实时进程日志" ;;
-                "view_logs_hint") echo "正在读取实时日志... 请按 Ctrl+C 停止查看并返回菜单。" ;;
-                "view_list") echo "查看完整插件清单" ;;
-                "add_pkg") echo "交互添加自定义插件" ;;
-                "del_pkg") echo "删除已有自定义插件" ;;
-                "edit_file") echo "手动编辑配置文件" ;;
-                "ver_update") echo "检查并更新软件包版本" ;;
-                "save_exit") echo "保存配置并返回" ;;
-                "discard") echo "放弃修改并返回" ;;
-                "mod_source") echo "修改远程仓库地址" ;;
-                "manage_model") echo "管理待编译机型列表" ;;
-                "config_cache") echo "配置缓存保留策略" ;;
                 *) echo "$key" ;;
             esac ;;
     esac
 }
 
+# --- 视觉组件保持 V11.0 稳定版不动 ---
 msg_info() { echo -e " ${BC}[$(T info)]${NC} ${BW}$1${NC}"; }
 msg_ok()   { echo -e " ${BG}[$(T done)]${NC} ${BW}$1${NC}"; }
 msg_warn() { echo -e " ${BY}[$(T warn)]${NC} ${BW}$1${NC}"; }
 msg_err()  { echo -e " ${BR}[$(T fail)]${NC} ${BW}$1${NC}"; }
 msg_step() { local k="step$1"; echo -e "\n ${BP}--- STEP $1 : $(T $k) ---${NC}"; }
 draw_line() { echo -e " ${BW}-----------------------------------------------------${NC}"; }
-
-get_sys_info() { 
-    local l=$(uptime | awk -F'load average:' '{print $2}' | awk -F',' '{print $1}' | xargs)
-    local t=$(grep MemTotal /proc/meminfo | awk '{print $2}')
-    local f=$(grep MemFree /proc/meminfo | awk '{print $2}')
-    local b=$(grep ^Buffers /proc/meminfo | awk '{print $2}')
-    local c=$(grep ^Cached /proc/meminfo | awk '{print $2}')
-    local u=$((t-f-b-c)); local p=$((u*100/t))
-    local d=$(df -h / | awk '/\// {print $(NF-1)}' | head -n 1)
-    echo -e " ${BC}$(T load): ${BY}$l ${BC}$(T mem): ${BY}$p% ${BC}$(T disk): ${BY}$d${NC}"
-}
-
-select_menu() { 
-    local title=$1; shift; local options=("$@"); local selected=0; local key=""
-    RET_IDX=0; tput civis >&2
-    while true; do 
-        echo -e "  ${BOLD}${title}${NC}" >&2
-        for i in "${!options[@]}"; do 
-            [ $i -eq $selected ] && echo -e "  ${BC}>> ${BOLD}${options[$i]}${NC}" >&2 || echo -e "     ${W}${options[$i]}${NC}" >&2
-        done
-        IFS= read -rsn1 key
-        if [[ $key == $'\e' ]]; then 
-            read -rsn2 -t 0.1 next; [[ $next == "[A" ]] && ((selected--)); [[ $next == "[B" ]] && ((selected++))
-            [ $selected -lt 0 ] && selected=$((${#options[@]} - 1)); [ $selected -ge ${#options[@]} ] && selected=0
-        elif [[ $key =~ [1-9] ]] && [ "$key" -le "${#options[@]}" ]; then selected=$((key - 1)); break
-        elif [[ $key == "q" ]]; then selected=255; break
-        elif [[ $key == "" ]]; then break; fi
-        tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2
-    done
-    tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; tput cnorm >&2; RET_IDX=$selected
-}
-
-multi_select_menu() { 
-    local title=$1; shift; local options=("$@"); local selected=0; local active=(); for i in "${!options[@]}"; do active[$i]=0; done
-    RET_VAL=""; tput civis >&2
-    while true; do 
-        echo -ne "  ${BOLD}${title}${NC} " >&2; [ "$CURRENT_LANG" == "en" ] && echo -e "${W}(Space:Toggle, Enter:Done, q:Back)${NC}" >&2 || echo -e "${W}(空格:勾选, Enter:确定, q:返回)${NC}" >&2
-        for i in "${!options[@]}"; do 
-            local m="[ ]"; [ "${active[$i]}" -eq 1 ] && m="[${BG}X${NC}]"
-            [ $i -eq $selected ] && echo -e "  ${BC}>> $m ${BOLD}${options[$i]}${NC}" >&2 || echo -e "     $m ${W}${options[$i]}${NC}" >&2
-        done
-        IFS= read -rsn1 key
-        case "$key" in 
-            $'\e') read -rsn2 -t 0.1 n; [[ $n == "[A" ]] && ((selected--)); [[ $n == "[B" ]] && ((selected++)); [ $selected -lt 0 ] && selected=$((${#options[@]} - 1)); [ $selected -ge ${#options[@]} ] && selected=0 ;;
-            " ") [ "${active[$selected]}" -eq 1 ] && active[$selected]=0 || active[$selected]=1 ;;
-            "q") RET_VAL="BACK"; tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; tput cnorm >&2; return ;;
-            "") break ;;
-        esac
-        tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2
-    done
-    tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; tput cnorm >&2; local res=""
-    for i in "${!active[@]}"; do [ "${active[$i]}" -eq 1 ] && res+="$i "; done; RET_VAL="$res"
-}
+get_sys_info() { local l=$(uptime | awk -F'load average:' '{print $2}' | awk -F',' '{print $1}' | xargs); local t=$(grep MemTotal /proc/meminfo | awk '{print $2}'); local f=$(grep MemFree /proc/meminfo | awk '{print $2}'); local b=$(grep ^Buffers /proc/meminfo | awk '{print $2}'); local c=$(grep ^Cached /proc/meminfo | awk '{print $2}'); local u=$((t - f - b - c)); local p=$((u * 100 / t)); local d=$(df -h / | awk '/\// {print $(NF-1)}' | head -n 1); echo -e " ${BC}$(T load): ${BY}$l ${BC}$(T mem): ${BY}$p% ${BC}$(T disk): ${BY}$d${NC}"; }
+select_menu() { local title=$1; shift; local options=("$@"); local selected=0; local key=""; RET_IDX=0; tput civis >&2; while true; do echo -e "  ${BOLD}${title}${NC}" >&2; for i in "${!options[@]}"; do if [ $i -eq $selected ]; then echo -e "  ${BC}>> ${BOLD}${options[$i]}${NC}" >&2; else echo -e "     ${W}${options[$i]}${NC}" >&2; fi; done; IFS= read -rsn1 key; if [[ $key == $'\e' ]]; then read -rsn2 -t 0.1 next; [[ $next == "[A" ]] && ((selected--)); [[ $next == "[B" ]] && ((selected++)); [ $selected -lt 0 ] && selected=$((${#options[@]} - 1)); [ $selected -ge ${#options[@]} ] && selected=0; elif [[ $key =~ [1-9] ]] && [ "$key" -le "${#options[@]}" ]; then selected=$((key - 1)); break; elif [[ $key == "q" ]]; then selected=$((${#options[@]} - 1)); break; elif [[ $key == "" ]]; then break; fi; tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; done; tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; tput cnorm >&2; RET_IDX=$selected; }
+multi_select_menu() { local title=$1; shift; local options=("$@"); local selected=0; local active=(); for i in "${!options[@]}"; do active[$i]=0; done; RET_VAL=""; tput civis >&2; while true; do echo -ne "  ${BOLD}${title}${NC} " >&2; [ "$CURRENT_LANG" == "en" ] && echo -e "${W}(Space:Toggle, Enter:Confirm, q:Back)${NC}" >&2 || echo -e "${W}(空格:勾选, Enter:确定, q:返回)${NC}" >&2; for i in "${!options[@]}"; do local m="[ ]"; [ "${active[$i]}" -eq 1 ] && m="[${BG}X${NC}]"; [ $i -eq $selected ] && echo -e "  ${BC}>> $m ${BOLD}${options[$i]}${NC}" >&2 || echo -e "     $m ${W}${options[$i]}${NC}" >&2; done; IFS= read -rsn1 key; case "$key" in $'\e') read -rsn2 -t 0.1 n; [[ $n == "[A" ]] && ((selected--)); [[ $n == "[B" ]] && ((selected++)); [ $selected -lt 0 ] && selected=$((${#options[@]} - 1)); [ $selected -ge ${#options[@]} ] && selected=0 ;; " ") [ "${active[$selected]}" -eq 1 ] && active[$selected]=0 || active[$selected]=1 ;; "q") RET_VAL="BACK"; tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; tput cnorm >&2; return ;; "") break ;; esac; tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; done; tput cuu $((${#options[@]} + 1)) >&2; tput ed >&2; tput cnorm >&2; local res=""; for i in "${!active[@]}"; do [ "${active[$i]}" -eq 1 ] && res+="$i "; done; RET_VAL="$res"; }
